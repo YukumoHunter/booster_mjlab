@@ -99,7 +99,6 @@ def booster_k1_amp_ppo_runner_cfg(use_muon: bool = False) -> AmpOnPolicyRunnerCf
         discriminator=AmpDiscriminatorCfg(
             hidden_layer_sizes=(256, 128),
             reward_scale=1.0,
-            reward_clamp_epsilon=1.0e-4,
             loss_type="bce",
             loss_fn_kwargs={},
         ),
