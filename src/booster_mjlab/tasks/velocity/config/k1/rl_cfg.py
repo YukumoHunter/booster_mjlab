@@ -2,7 +2,6 @@
 
 from mjlab.rl import RslRlModelCfg
 from booster_mjlab.rl.config import (
-    RslRlMuonPpoAlgorithmCfg,
     RslRlPpoAlgorithmCfg,
     RslRlOnPolicyRunnerCfg,
     RslRlSymmetryCfg,
@@ -10,7 +9,6 @@ from booster_mjlab.rl.config import (
 from booster_mjlab.amp.runners import (
     AmpOnPolicyRunnerCfg,
     AmpDiscriminatorCfg,
-    AmpRslRlMuonPpoAlgorithmCfg,
     AmpRslRlPpoAlgorithmCfg,
 )
 
@@ -20,7 +18,7 @@ def booster_k1_ppo_runner_cfg(use_muon: bool = False) -> RslRlOnPolicyRunnerCfg:
 
     With ``use_muon`` the actor/critic matrices are optimized with Muon instead of Adam.
     """
-    algorithm_cls = RslRlMuonPpoAlgorithmCfg if use_muon else RslRlPpoAlgorithmCfg
+    optimizer = "muon" if use_muon else "adam"
     return RslRlOnPolicyRunnerCfg(
         actor=RslRlModelCfg(
             hidden_dims=(512, 256, 128),
@@ -36,7 +34,8 @@ def booster_k1_ppo_runner_cfg(use_muon: bool = False) -> RslRlOnPolicyRunnerCfg:
             activation="elu",
             obs_normalization=True,
         ),
-        algorithm=algorithm_cls(
+        algorithm=RslRlPpoAlgorithmCfg(
+            optimizer=optimizer,
             value_loss_coef=1.0,
             use_clipped_value_loss=True,
             clip_param=0.2,
@@ -81,7 +80,7 @@ def booster_k1_amp_ppo_runner_cfg(use_muon: bool = False) -> AmpOnPolicyRunnerCf
     With ``use_muon`` the actor/critic matrices are optimized with Muon; the
     discriminator stays on Adam.
     """
-    algorithm_cls = AmpRslRlMuonPpoAlgorithmCfg if use_muon else AmpRslRlPpoAlgorithmCfg
+    optimizer = "muon" if use_muon else "adam"
     return AmpOnPolicyRunnerCfg(
         actor=RslRlModelCfg(
             hidden_dims=(512, 256, 128),
@@ -104,7 +103,8 @@ def booster_k1_amp_ppo_runner_cfg(use_muon: bool = False) -> AmpOnPolicyRunnerCf
             loss_type="bce",
             loss_fn_kwargs={},
         ),
-        algorithm=algorithm_cls(
+        algorithm=AmpRslRlPpoAlgorithmCfg(
+            optimizer=optimizer,
             value_loss_coef=1.0,
             use_clipped_value_loss=True,
             clip_param=0.2,
